@@ -298,7 +298,7 @@ def plot_continuous_temperature_map(grid_coords, predictions, grid_shape, title=
         # Convert to Web Mercator if not already
         if original_stations.crs != 'EPSG:3857':
             original_stations = original_stations.to_crs('EPSG:3857')
-        original_stations.plot(ax=ax, color='red', markersize=50, marker='o', 
+        original_stations.plot(ax=ax, color='black', markersize=50, marker='o', 
                               edgecolor='black', linewidth=1, alpha=0.9, zorder=5,
                               label='Original Stations')
     
@@ -371,9 +371,9 @@ def plot_continuous_temperature_map_simple(grid_coords, predictions, grid_shape,
 DB = "/media/cap/extra_work/road_model/OBSTABLE"
 variables = ['TROAD', 'T2m', 'Td2m', 'D10m', 'S10m', 'AccPcp12h']
 year = 2023
-date_chosen = datetime(year,8,11,15) 
-date_chosen = datetime(year,11,2,0) 
 date_chosen = datetime(year,2,11,0) 
+date_chosen = datetime(year,11,2,0) 
+date_chosen = datetime(year,8,11,15) 
 date_str = datetime.strftime(date_chosen,"%Y%m%d%H")
 
 # Load all available data
