@@ -18,7 +18,7 @@ import ast
 
 # ---- user params
 TIF_LIST_FILE = "selected_tif_metadata.txt" #paths to DEM tiles
-STATIONS_FILE = "../selected_kriging_points_utm.csv"
+STATIONS_FILE = "../data/selected_kriging_points_utm.csv"
 CRS_UTM = "EPSG:25832"    # <- change to your UTM zone
 OUT_CSV = "station_metrics_kriging_points.csv"
 
