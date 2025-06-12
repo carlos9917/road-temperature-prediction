@@ -372,8 +372,8 @@ DB = "/media/cap/extra_work/road_model/OBSTABLE"
 variables = ['TROAD', 'T2m', 'Td2m', 'D10m', 'S10m', 'AccPcp12h']
 year = 2023
 date_chosen = datetime(year,11,2,0) 
-date_chosen = datetime(year,2,11,0) 
 date_chosen = datetime(year,8,11,15) 
+date_chosen = datetime(year,2,11,0) 
 date_str = datetime.strftime(date_chosen,"%Y%m%d%H")
 
 # Load all available data
@@ -524,7 +524,8 @@ new_points['TROAD_variance'] = pred_var
 # Save results to a new CSV file
 OUT="../../../results/reports/troad_predictions_universal_kriging.csv"
 new_points.to_csv(OUT, index=False)
-
+#extra save for comparison with the other model
+new_points[["station_id","lat","lon","TROAD_predicted","TROAD_variance"]].to_csv(f"kriging_predictions_{date_str}.csv", index=False)
 print(f"Prediction complete. Results saved to {OUT}")
 print(new_points[['station_id', 'lat', 'lon', 'TROAD_predicted']].head())
 
