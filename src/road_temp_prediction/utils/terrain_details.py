@@ -67,6 +67,91 @@ def plot_profile(distances, elevations, station_id, output_file, station_index,o
     plt.close()
     print(f"Saved profile to {output_file}")
 
+# Simulating the plot_terrain_height function with the requested modifications
+def modified_plot_terrain_height(tif_path, station_id, easting, northing, output_file, buffer_distance=2000):
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    # Simulate terrain data
+    x_min, x_max = 548000, 552000
+    y_min, y_max = 618000, 622000
+    easting, northing = 550000, 620000
+    station_id = 9999
+    
+    # Create dummy elevation data
+    x = np.linspace(x_min, x_max, 100)
+    y = np.linspace(y_min, y_max, 100)
+    X, Y = np.meshgrid(x, y)
+    Z = 100 + 50 * np.sin(X/1000) * np.cos(Y/1000)
+    
+    # Plot the terrain
+    im = ax.imshow(Z, extent=[x_min, x_max, y_min, y_max], cmap='terrain', alpha=0.7)
+    
+    # Add a colorbar
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label('Elevation (m)')
+    
+    # Mark the station location
+    ax.scatter([easting], [northing], color='red', s=100, marker='*', label=f'Station {int(station_id)}')
+    
+    # Add N-S and E-W profile lines
+    ax.axhline(y=northing, color='blue', linestyle='--', alpha=0.5, label='E-W Profile')
+    ax.axvline(x=easting, color='green', linestyle='--', alpha=0.5, label='N-S Profile')
+    
+    # MODIFICATION 1: Add points at the beginning and end of the profile lines
+    # For E-W profile
+    profile_length = 1000  # meters
+    half_length = profile_length / 2
+    ax.scatter([easting - half_length, easting + half_length], [northing, northing], 
+               color='blue', s=80, marker='o', zorder=5)
+    
+    # For N-S profile
+    ax.scatter([easting, easting], [northing - half_length, northing + half_length], 
+               color='green', s=80, marker='o', zorder=5)
+    
+    # Set the title and labels
+    ax.set_title(f'Terrain Height around Station {int(station_id)}')
+    ax.set_xlabel('Easting (m)')
+    ax.set_ylabel('Northing (m)')
+    
+    # Add a legend
+    ax.legend()
+    
+    # Add a north arrow
+    ax.text(x_max - 200, y_min + 200, 'N', fontsize=12, ha='center', va='center',
+            bbox=dict(facecolor='white', alpha=0.5, boxstyle='circle'))
+    ax.arrow(x_max - 200, y_min + 150, 0, 100, head_width=50, head_length=50,
+             fc='black', ec='black')
+    
+    # MODIFICATION 2 & 3: Move the scale bar closer to the legend and change to 100m
+    # Get legend position to place scale bar nearby
+    legend = ax.get_legend()
+    legend_bbox = legend.get_bbox_to_anchor().transformed(ax.transAxes.inverted())
+    legend_x = legend_bbox.x0
+    legend_y = legend_bbox.y0
+    
+    # Place scale bar below the legend
+    scale_bar_length = 100  # Changed from 500m to 100m
+    scale_bar_x = x_min + 500
+    scale_bar_y = y_min + 500  # Moved closer to legend
+    
+    ax.plot([scale_bar_x, scale_bar_x + scale_bar_length], 
+            [scale_bar_y, scale_bar_y], 'k-', lw=2)
+    
+    # MODIFICATION 4: Add vertical lines at the tips of the scale bar
+    ax.plot([scale_bar_x, scale_bar_x], [scale_bar_y - 20, scale_bar_y + 20], 'k-', lw=2)
+    ax.plot([scale_bar_x + scale_bar_length, scale_bar_x + scale_bar_length], 
+            [scale_bar_y - 20, scale_bar_y + 20], 'k-', lw=2)
+    
+    ax.text(scale_bar_x + scale_bar_length/2, scale_bar_y + 50, f'{scale_bar_length} m',
+            ha='center', va='center', bbox=dict(facecolor='white', alpha=0.5))
+    
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+
 def plot_terrain_height(tif_path, station_id, easting, northing, output_file, buffer_distance=2000):
     """
     Plot the terrain height around a station using the same TIF file used for the profile.
@@ -124,6 +209,10 @@ def plot_terrain_height(tif_path, station_id, easting, northing, output_file, bu
         # Add N-S and E-W profile lines
         ax.axhline(y=northing, color='blue', linestyle='--', alpha=0.5, label='E-W Profile')
         ax.axvline(x=easting, color='green', linestyle='--', alpha=0.5, label='N-S Profile')
+        #this aims to plot the tips of the line
+        #half_length = buffer_distance / 2
+        #ax.scatter([easting - half_length, easting + half_length], [northing, northing],
+        #           color='blue', s=80, marker='o', zorder=5)
 
         # Set the title and labels
         ax.set_title(f'Terrain Height around Station {int(station_id)}')
@@ -139,6 +228,23 @@ def plot_terrain_height(tif_path, station_id, easting, northing, output_file, bu
         ax.arrow(x_max - 200, y_min + 150, 0, 100, head_width=50, head_length=50,
                 fc='black', ec='black')
 
+        # Add N-S and E-W profile lines
+        #profile_length = buffer_length  # meters
+        #half_length = profile_length / 2
+        
+        # E-W profile line with points at beginning and end
+        #ax.axhline(y=northing, color='blue', linestyle='--', alpha=0.5, label='E-W Profile')
+        #ax.scatter([easting - half_length, easting + half_length], [northing, northing],
+        #           color='blue', s=80, marker='o', zorder=5)
+        
+        # N-S profile line with points at beginning and end
+        #ax.axvline(x=easting, color='green', linestyle='--', alpha=0.5, label='N-S Profile')
+        #ax.scatter([easting, easting], [northing - half_length, northing + half_length],
+        #           color='green', s=80, marker='o', zorder=5)
+
+
+
+
         # Add a scale bar
         scale_bar_length = 500  # meters
         ax.plot([x_min + 200, x_min + 200 + scale_bar_length], [y_min + 200, y_min + 200], 'k-', lw=2)
@@ -151,6 +257,7 @@ def plot_terrain_height(tif_path, station_id, easting, northing, output_file, bu
         print(f"Saved terrain height plot to {output_file}")
 
 def main(orientation):
+    length_of_the_profile = 1000
     stations = pd.read_csv(STATIONS_FILE, sep="|", names=["easting", "northing", "station_id", "d1", "d2"])
     dsm_files = read_dsm_files()
     tif_paths = [file_info['name'] for file_info in dsm_files]
@@ -172,8 +279,9 @@ def main(orientation):
         print(f"Processing station {station_id} using TIF file: {tif_path}")
 
         # Create and save the profile plot
-        x_coords, y_coords = create_profile_line(easting, northing, length=1000, orientation=orientation, num_points=200)
+        x_coords, y_coords = create_profile_line(easting, northing, length=length_of_the_profile, orientation=orientation, num_points=200)
         distances = np.linspace(-500, 500, 200)  # Centered at station
+        #print(f"Plotting profile for distances {distances}")
         elevations = sample_elevations(tif_path, x_coords, y_coords)
         station_index = len(distances) // 2  # Station is at the center
         profile_output = os.path.join(profile_dir, f"terrain_profile_station_{int(station_id)}.png")

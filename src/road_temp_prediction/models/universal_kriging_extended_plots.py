@@ -371,8 +371,8 @@ def plot_continuous_temperature_map_simple(grid_coords, predictions, grid_shape,
 DB = "/media/cap/extra_work/road_model/OBSTABLE"
 variables = ['TROAD', 'T2m', 'Td2m', 'D10m', 'S10m', 'AccPcp12h']
 year = 2023
-date_chosen = datetime(year,2,11,0) 
 date_chosen = datetime(year,11,2,0) 
+date_chosen = datetime(year,2,11,0) 
 date_chosen = datetime(year,8,11,15) 
 date_str = datetime.strftime(date_chosen,"%Y%m%d%H")
 
@@ -491,7 +491,7 @@ plot_continuous_temperature_map(grid_coords, grid_variance, grid_shape,
 
 print("\\n=== DISCRETE POINT PREDICTIONS ===")
 # Load the new points where we want to predict TROAD
-new_points = pd.read_csv('/media/cap/extra_work/road_model/gistools/height_calc_DSM/station_metrics_kriging_points.csv')
+new_points = pd.read_csv('../data/station_metrics_kriging_points.csv')
 print(f"Loaded {len(new_points)} new points for prediction")
 
 # Prepare coordinates for prediction
