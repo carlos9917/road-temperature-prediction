@@ -9,6 +9,8 @@ import seaborn as sns
 from scipy.stats import pearsonr
 import glob
 import os
+from matplotlib.colors import Normalize
+
 
 def load_predictions(rf_pattern="rf_predictions_*.csv", kriging_pattern="kriging_predictions_*.csv"):
     """Load prediction results from both methods"""
@@ -71,6 +73,71 @@ def merge_predictions(rf_df, kriging_df):
     })
     
     return merged
+
+
+def create_comparison_plots_like_example(merged_df, save_plots=True):
+    """Create plots similar to the example image with kriging left, RF right"""
+    
+    # Set up the plotting style
+    plt.style.use('default')
+    
+    # Create figure with 2x2 subplots (similar to example layout)
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+    
+    # Define temperature colormap and normalization
+    temp_min = min(merged_df['Kriging_prediction'].min(), merged_df['RF_prediction'].min())
+    temp_max = max(merged_df['Kriging_prediction'].max(), merged_df['RF_prediction'].max())
+    temp_norm = Normalize(vmin=temp_min, vmax=temp_max)
+    temp_cmap = plt.cm.coolwarm
+    
+    # Plot 1: Kriging Values - All Stations (top left)
+    scatter1 = ax1.scatter(merged_df['lon'], merged_df['lat'], 
+                         c=merged_df['Kriging_prediction'], 
+                         cmap=temp_cmap, norm=temp_norm,
+                         s=80, alpha=0.8, edgecolors='black', linewidth=0.5)
+    
+    ax1.set_xlabel('Longitude')
+    ax1.set_ylabel('Latitude')
+    ax1.set_title('Kriging Predictions - All Stations', fontsize=14, pad=15)
+    ax1.grid(True, alpha=0.3)
+    
+    # Add colorbar for temperature
+    cbar1 = plt.colorbar(scatter1, ax=ax1, shrink=0.8)
+    cbar1.set_label('Temperature (°C)', fontsize=10)
+    
+    # Plot 2: Random Forest Values - All Stations (top right)
+    scatter2 = ax2.scatter(merged_df['lon'], merged_df['lat'], 
+                         c=merged_df['RF_prediction'], 
+                         cmap=temp_cmap, norm=temp_norm,
+                         s=80, alpha=0.8, edgecolors='black', linewidth=0.5)
+    
+    ax2.set_xlabel('Longitude')
+    ax2.set_ylabel('Latitude')
+    ax2.set_title('Random Forest Predictions - All Stations', fontsize=14, pad=15)
+    ax2.grid(True, alpha=0.3)
+    
+    # Add colorbar for temperature
+    cbar2 = plt.colorbar(scatter2, ax=ax2, shrink=0.8)
+    cbar2.set_label('Temperature (°C)', fontsize=10)
+    
+    # Create simple continuous surfaces for bottom plots
+    # This is a simplified version - you would need actual grid data for true continuous surfaces
+    
+    # Plot 3: Kriging Continuous Surface (bottom left)
+    # Create a simple interpolated surface for visualization
+
+    # Adjust layout
+    plt.tight_layout()
+
+    if save_plots:
+        plt.savefig('kriging_vs_rf_comparison.png', dpi=300, bbox_inches='tight')
+        print("Comparison plot saved as 'kriging_vs_rf_comparison.png'")
+
+    plt.show()
+
+    return merged_df
+
+
 
 def create_comparison_plots(merged_df, save_plots=True):
     """Create comprehensive comparison plots"""
@@ -191,8 +258,11 @@ def create_comparison_plots(merged_df, save_plots=True):
         }
         
         stats_data.extend([rf_stats, kriging_stats])
+        import pdb
+        pdb.set_trace()
     
     stats_df = pd.DataFrame(stats_data)
+    print(stats_df.to_markdown(index=False))
     
     # Create table
     table = ax6.table(cellText=stats_df.values, colLabels=stats_df.columns,
@@ -280,6 +350,7 @@ def main():
         # Create comparison plots
         print("Creating comparison plots...")
         merged_df = create_comparison_plots(merged_df)
+        merged_df = create_comparison_plots_like_example(merged_df)
         
         # Print detailed comparison
         print_detailed_comparison(merged_df)
